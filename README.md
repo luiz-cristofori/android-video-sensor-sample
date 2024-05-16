@@ -1,4 +1,4 @@
-# [Android] Android Video Sensor App Sample
+# [Android] Video Sensor App Sample
 
 About
 =============
