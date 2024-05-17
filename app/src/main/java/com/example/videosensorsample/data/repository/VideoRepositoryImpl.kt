@@ -4,6 +4,6 @@ import com.example.videosensorsample.domain.repository.VideoRepository
 
 class VideoRepositoryImpl : VideoRepository {
     override fun getVideoUrl() =
-        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
+        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4"
 
 }

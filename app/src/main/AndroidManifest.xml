@@ -2,6 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Location Permissions -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:name=".AppApplication"
         android:allowBackup="true"
@@ -14,7 +20,7 @@
         android:theme="@style/Theme.VideoSensorSample"
         tools:targetApi="31">
         <activity
-            android:name=".presentation.view.MainActivity"
+            android:name=".presentation.view.VideoPlayerActivity"
             android:exported="true"
             android:theme="@style/Theme.VideoSensorSample">
             <intent-filter>
