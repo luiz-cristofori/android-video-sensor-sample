@@ -22,8 +22,22 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isDebuggable = false
+            isShrinkResources = true
+            versionNameSuffix = "-RELEASE"
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+        debug {
+            isDebuggable = true
+            isMinifyEnabled = false
+            isEmbedMicroApp = false
+            versionNameSuffix = "-DEBUG"
+            applicationIdSuffix = ".debug"
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
