@@ -1,4 +1,4 @@
-package com.example.videosensorsample.ui.theme
+package com.example.videosensorsample.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build
