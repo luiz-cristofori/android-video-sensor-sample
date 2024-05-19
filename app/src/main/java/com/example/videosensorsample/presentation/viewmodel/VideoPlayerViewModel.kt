@@ -1,5 +1,7 @@
 package com.example.videosensorsample.presentation.viewmodel
 
+import android.media.AudioManager
+import android.media.AudioManager.STREAM_MUSIC
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,7 +23,10 @@ import com.example.videosensorsample.presentation.state.VideoPlayerUiModel
 import com.example.videosensorsample.presentation.viewmodel.helper.MutableSingleLiveEvent
 
 
-class VideoPlayerViewModel(private val videoRepository: VideoRepository) : ViewModel() {
+class VideoPlayerViewModel(
+    private val videoRepository: VideoRepository,
+    private val audioManager: AudioManager
+) : ViewModel() {
 
     private val _state = MutableLiveData<VideoPlayerState>(Loading(VideoPlayerUiModel()))
     val state = _state.asLiveData()
@@ -42,13 +47,14 @@ class VideoPlayerViewModel(private val videoRepository: VideoRepository) : ViewM
             }
 
             is OnRotationX -> {
-                _effect.value = UpdateVolumeBy(calculateVolume(action.rotationX))
+                _effect.value = UpdateVolumeBy(action.rotationX)
             }
         }
     }
 
     fun initPlayer(player: ExoPlayer) {
         _videoPlayer = player
+        _state.value = Loading(getCurrentStateModel().copy(player = _videoPlayer))
     }
 
     fun pausePlayer() {
@@ -60,20 +66,21 @@ class VideoPlayerViewModel(private val videoRepository: VideoRepository) : ViewM
     }
 
     fun updateVolumeBy(volume: Float) {
-        _videoPlayer?.volume = volume
+        val currentVolume = audioManager.getStreamVolume(STREAM_MUSIC)
+        val maxVolume = audioManager.getStreamMaxVolume(STREAM_MUSIC)
+
+        var newVolume = currentVolume + (volume * 2).toInt()
+        newVolume = newVolume.coerceIn(0, maxVolume)
+
+        audioManager.setStreamVolume(STREAM_MUSIC, newVolume, 0)
     }
 
     fun loadVideoUrl() {
         _state.value = Loaded(
             getCurrentStateModel().copy(
-                videoUrl = videoRepository.getVideoUrl(),
-                player = _videoPlayer
+                videoUrl = videoRepository.getVideoUrl()
             )
         )
-    }
-
-    private fun calculateVolume(rotationX: Float): Float {
-        return ((rotationX + 1.0f) / 2.0f).coerceIn(0.0f, 1.0f)
     }
 
 
