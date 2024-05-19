@@ -5,6 +5,7 @@ interface VideoPlayerAction {
 
     sealed class Action {
         object ClickTest : Action()
-        // data class Click(val videoUrl: String?) : Action()
+        object OnShakeDetect : Action()
+        data class OnRotationX(val rotationX: Float) : Action()
     }
 }

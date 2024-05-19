@@ -1,4 +1,4 @@
-package com.example.videosensorsample.presentation.viewmodel
+package com.example.videosensorsample.presentation.viewmodel.helper
 
 import androidx.annotation.MainThread
 

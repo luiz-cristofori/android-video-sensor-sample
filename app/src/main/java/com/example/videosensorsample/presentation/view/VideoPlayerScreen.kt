@@ -10,6 +10,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,9 +27,7 @@ import androidx.lifecycle.Lifecycle.Event.ON_PAUSE
 import androidx.lifecycle.Lifecycle.Event.ON_RESUME
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import androidx.media3.ui.PlayerView.SHOW_BUFFERING_ALWAYS
 import com.example.videosensorsample.presentation.action.VideoPlayerAction.Action
@@ -46,7 +45,7 @@ fun VideoPlayerScreen(state: VideoPlayerState, sendAction: (Action) -> Unit) {
         }
 
         is Loaded -> {
-            VideoPlayerContent(state.uiModel)
+            VideoPlayerContent(state.uiModel, sendAction)
         }
     }
 }
@@ -64,7 +63,7 @@ fun LoadingContent() {
 
 @OptIn(UnstableApi::class)
 @Composable
-fun VideoPlayerContent(uiModel: VideoPlayerUiModel) {
+fun VideoPlayerContent(uiModel: VideoPlayerUiModel, sendAction: (Action) -> Unit) {
     var lifecycle by remember { mutableStateOf(ON_CREATE) }
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -74,24 +73,8 @@ fun VideoPlayerContent(uiModel: VideoPlayerUiModel) {
         MediaItem.fromUri(uiModel.videoUrl.orEmpty())
     }
 
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-            this.setMediaItem(mediaSource)
-            this.playWhenReady = true
-            this.prepare()
-            this.addListener(object : Player.Listener {
-                override fun onEvents(player: Player, events: Player.Events) {
-                    super.onEvents(player, events)
-                }
-
-                override fun onPlaybackStateChanged(playbackState: Int) {
-                    super.onPlaybackStateChanged(playbackState)
-                    if (playbackState == ExoPlayer.STATE_READY) {
-
-                    }
-                }
-            })
-        }
+    LaunchedEffect(key1 = uiModel.player) {
+        uiModel.player?.setMediaItem(mediaSource)
     }
 
     DisposableEffect(lifecycleOwner) {
@@ -102,7 +85,7 @@ fun VideoPlayerContent(uiModel: VideoPlayerUiModel) {
         lifecycleOwner.lifecycle.addObserver(observer)
 
         onDispose {
-            exoPlayer.release()
+            uiModel.player?.release()
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
@@ -114,7 +97,7 @@ fun VideoPlayerContent(uiModel: VideoPlayerUiModel) {
         factory = { ctx ->
             PlayerView(ctx).apply {
                 setShowBuffering(SHOW_BUFFERING_ALWAYS)
-                player = exoPlayer
+                player = uiModel.player
             }
         },
         update = {

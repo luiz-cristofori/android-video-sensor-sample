@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Observer
-import com.example.videosensorsample.presentation.viewmodel.SingleLiveEvent
+import com.example.videosensorsample.presentation.viewmodel.helper.SingleLiveEvent
 
 /**
  * The function collectEffect will be used to get effect
