@@ -1,10 +1,13 @@
-package com.example.videosensorsample.presentation.effect
+package com.example.videosensorsample.presentation.viewmodel.helper
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import com.example.videosensorsample.presentation.viewmodel.helper.SingleLiveEvent
+
+fun <T> MutableLiveData<T>.asLiveData(): LiveData<T> = this
 
 /**
  * The function collectEffect will be used to get effect

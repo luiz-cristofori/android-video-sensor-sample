@@ -1,4 +1,4 @@
-package com.example.videosensorsample.presentation.view
+package com.example.videosensorsample.presentation.listener
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -6,9 +6,12 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import kotlin.math.sqrt
 
-class ShakeDetector(private val onShake: () -> Unit) : SensorEventListener {
-    private val shakeThresholdGravity = 2.7f
-    private val shakeTimeLapse = 500
+class AccelerometerEventListener(private val onShake: () -> Unit) : SensorEventListener {
+    companion object {
+        const val SHAKE_THRESHOLD_GRAVITY = 2.7f
+        const val SHAKE_TIME_LAPSE = 500
+    }
+
     private var lastShakeTime: Long = 0
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -20,9 +23,9 @@ class ShakeDetector(private val onShake: () -> Unit) : SensorEventListener {
 
                 val gForce = sqrt(gX * gX + gY * gY + gZ * gZ)
 
-                if (gForce > shakeThresholdGravity) {
+                if (gForce > SHAKE_THRESHOLD_GRAVITY) {
                     val now = System.currentTimeMillis()
-                    if (lastShakeTime + shakeTimeLapse > now) {
+                    if (lastShakeTime + SHAKE_TIME_LAPSE > now) {
                         return
                     }
                     lastShakeTime = now
@@ -32,7 +35,5 @@ class ShakeDetector(private val onShake: () -> Unit) : SensorEventListener {
         }
     }
 
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        // No-op
-    }
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 }

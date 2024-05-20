@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Video Sensor Sample</string>
+    <string name="permission_alert_dialog_title">GPS Permission Required</string>
+    <string name="permission_alert_dialog_description">This app requires GPS permission to access your location.</string>
+    <string name="permission_alert_dialog_confirm_button_text">Grant Permission</string>
+    <string name="permission_alert_dialog_cancel_button_text">Cancel</string>
+    <string name="enable_permission_button_text">Enable Permission</string>
+    <string name="too_far_away_toast_text">Too far away, resetting player</string>
 </resources>

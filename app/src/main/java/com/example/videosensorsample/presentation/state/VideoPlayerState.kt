@@ -8,6 +8,8 @@ sealed class VideoPlayerState(open val uiModel: VideoPlayerUiModel = VideoPlayer
 }
 
 data class VideoPlayerUiModel(
+    val isEducationalDialogVisible: Boolean = false,
+    val isPermissionGranted: Boolean = false,
     val videoUrl: String? = null,
     val player: Player? = null
 )
