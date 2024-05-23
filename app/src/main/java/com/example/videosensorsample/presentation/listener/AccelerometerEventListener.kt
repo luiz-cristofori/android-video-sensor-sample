@@ -1,9 +1,10 @@
 package com.example.videosensorsample.presentation.listener
 
 import android.hardware.Sensor
+import android.hardware.Sensor.TYPE_ACCELEROMETER
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
-import android.hardware.SensorManager
+import android.hardware.SensorManager.GRAVITY_EARTH
 import kotlin.math.sqrt
 
 class AccelerometerEventListener(private val onShake: () -> Unit) : SensorEventListener {
@@ -16,10 +17,10 @@ class AccelerometerEventListener(private val onShake: () -> Unit) : SensorEventL
 
     override fun onSensorChanged(event: SensorEvent?) {
         event?.let {
-            if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-                val gX = event.values[0] / SensorManager.GRAVITY_EARTH
-                val gY = event.values[1] / SensorManager.GRAVITY_EARTH
-                val gZ = event.values[2] / SensorManager.GRAVITY_EARTH
+            if (event.sensor.type == TYPE_ACCELEROMETER) {
+                val gX = event.values[0] / GRAVITY_EARTH
+                val gY = event.values[1] / GRAVITY_EARTH
+                val gZ = event.values[2] / GRAVITY_EARTH
 
                 val gForce = sqrt(gX * gX + gY * gY + gZ * gZ)
 

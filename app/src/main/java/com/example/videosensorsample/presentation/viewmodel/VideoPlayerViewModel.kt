@@ -2,6 +2,9 @@ package com.example.videosensorsample.presentation.viewmodel
 
 import android.location.Location
 import android.media.AudioManager
+import android.media.AudioManager.ADJUST_LOWER
+import android.media.AudioManager.ADJUST_RAISE
+import android.media.AudioManager.FLAG_SHOW_UI
 import android.media.AudioManager.STREAM_MUSIC
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -39,7 +42,6 @@ class VideoPlayerViewModel(
 ) : ViewModel() {
     companion object {
         private const val MAX_RANGE = 10
-        private const val PLAYBACK_UPDATE_SENSIBILITY = 5000
     }
 
     private val _state = MutableLiveData<VideoPlayerState>(Loading(VideoPlayerUiModel()))
@@ -130,22 +132,18 @@ class VideoPlayerViewModel(
         }
     }
 
-    fun updateVolumeBy(volume: Float) {
-        val currentVolume = audioManager.getStreamVolume(STREAM_MUSIC)
-        val maxVolume = audioManager.getStreamMaxVolume(STREAM_MUSIC)
-        val newVolume = currentVolume + (volume * 2).toInt()
-
-        audioManager.setStreamVolume(STREAM_MUSIC, newVolume.coerceIn(0, maxVolume), 0)
+    fun updateVolumeBy(rotationX: Float) {
+        audioManager.adjustStreamVolume(
+            STREAM_MUSIC,
+            if (rotationX > 0) ADJUST_RAISE else ADJUST_LOWER,
+            FLAG_SHOW_UI
+        )
     }
 
     fun updatePlaybackBy(rotationZ: Float) {
         _videoPlayer?.run {
-            if (isLoading || isPlaying) return
-            val newPosition =
-                currentPosition + (rotationZ * PLAYBACK_UPDATE_SENSIBILITY).toLong()
-            if (newPosition < 0) seekTo(0)
-            if (newPosition > duration) seekTo(duration)
-            seekTo(newPosition)
+            if (isLoading) return
+            seekTo(if (rotationZ < 0) currentPosition + 1000 else currentPosition - 1000)
         }
     }
 

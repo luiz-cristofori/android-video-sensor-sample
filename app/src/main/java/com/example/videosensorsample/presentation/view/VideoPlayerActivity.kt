@@ -5,7 +5,6 @@ import android.hardware.Sensor
 import android.hardware.Sensor.TYPE_ACCELEROMETER
 import android.hardware.Sensor.TYPE_GYROSCOPE
 import android.hardware.SensorManager
-import android.hardware.SensorManager.SENSOR_DELAY_NORMAL
 import android.hardware.SensorManager.SENSOR_DELAY_UI
 import android.os.Bundle
 import android.widget.Toast
@@ -21,8 +20,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import com.example.videosensorsample.R
+import com.example.videosensorsample.domain.CacheUtil
 import com.example.videosensorsample.presentation.action.VideoPlayerAction.Action.OnPermissionDenied
 import com.example.videosensorsample.presentation.action.VideoPlayerAction.Action.OnPermissionGranted
 import com.example.videosensorsample.presentation.action.VideoPlayerAction.Action.OnRotationX
@@ -45,6 +47,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@UnstableApi
 class VideoPlayerActivity : ComponentActivity() {
 
     private val viewModel: VideoPlayerViewModel by viewModel()
@@ -56,9 +59,11 @@ class VideoPlayerActivity : ComponentActivity() {
     private lateinit var gyroscopeEventListener: GyroscopeEventListener
     private lateinit var accelerometerEventListener: AccelerometerEventListener
 
+    @androidx.annotation.OptIn(UnstableApi::class)
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val cacheDataSourceFactory = CacheUtil.getCacheDataSourceFactory(this)
 
         initSensors()
 
@@ -75,10 +80,14 @@ class VideoPlayerActivity : ComponentActivity() {
                             viewModel.sendAction(if (isGranted) OnPermissionGranted else OnPermissionDenied)
                         }
                     )
-                    val exoPlayer = ExoPlayer.Builder(this).build().apply {
-                        this.playWhenReady = true
-                        this.prepare()
-                    }
+
+                    val exoPlayer =
+                        ExoPlayer.Builder(this)
+                            .setMediaSourceFactory(DefaultMediaSourceFactory(cacheDataSourceFactory))
+                            .build().apply {
+                                playWhenReady = true
+                                prepare()
+                            }
 
                     LaunchedEffect(Unit) {
                         viewModel.init(gpsPermissionState.status.isGranted, exoPlayer)
@@ -149,7 +158,7 @@ class VideoPlayerActivity : ComponentActivity() {
             sensorManager.registerListener(
                 gyroscopeEventListener,
                 it,
-                SENSOR_DELAY_NORMAL
+                SENSOR_DELAY_UI
             )
         }
     }
